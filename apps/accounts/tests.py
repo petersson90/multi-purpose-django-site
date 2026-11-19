@@ -1,6 +1,7 @@
 from django.db import IntegrityError, transaction
-from django.test import TestCase
+from django.test import RequestFactory, TestCase, override_settings
 from django.urls import reverse
+from django.views.defaults import server_error
 
 from .models import Profile, User
 
@@ -149,3 +150,18 @@ class AdminTests(TestCase):
         )
         self.assertEqual(response.status_code, 200)  # form re-rendered with an error
         self.assertEqual(User.objects.count(), 1)
+
+
+class ErrorPageTests(TestCase):
+    @override_settings(DEBUG=False)
+    def test_404_uses_site_layout(self):
+        response = self.client.get('/no-such-page/')
+        self.assertEqual(response.status_code, 404)
+        self.assertContains(response, 'Page not found', status_code=404)
+        self.assertContains(response, 'navbar-brand', status_code=404)
+
+    def test_500_is_standalone(self):
+        response = server_error(RequestFactory().get('/'))
+        self.assertEqual(response.status_code, 500)
+        self.assertIn(b'Something went wrong', response.content)
+        self.assertNotIn(b'navbar-brand', response.content)
