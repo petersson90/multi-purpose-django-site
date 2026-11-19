@@ -46,6 +46,38 @@ class EmailUniquenessTests(TestCase):
             User.objects.filter(pk=other.pk).update(email='ANNA@example.com')
 
 
+class LoginTests(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user('anna@example.com', PASSWORD)
+
+    def test_login_with_email(self):
+        response = self.client.post(
+            reverse('login'), {'username': 'anna@example.com', 'password': PASSWORD}
+        )
+        self.assertRedirects(response, reverse('accounts:profile'))
+
+    def test_login_email_is_case_insensitive(self):
+        response = self.client.post(
+            reverse('login'), {'username': 'ANNA@Example.com', 'password': PASSWORD}
+        )
+        self.assertRedirects(response, reverse('accounts:profile'))
+
+    def test_wrong_password_rejected(self):
+        response = self.client.post(
+            reverse('login'), {'username': 'anna@example.com', 'password': 'wrong-password-1'}
+        )
+        self.assertEqual(response.status_code, 200)
+
+
+class NoSignupTests(TestCase):
+    def test_no_signup_page(self):
+        self.assertEqual(self.client.get('/accounts/signup/').status_code, 404)
+
+    def test_pages_do_not_advertise_signup(self):
+        for url in (reverse('home'), reverse('login')):
+            self.assertNotContains(self.client.get(url), 'signup')
+
+
 class ProfileTests(TestCase):
     def setUp(self):
         self.user = User.objects.create_user('anna@example.com', PASSWORD)
@@ -57,6 +89,29 @@ class ProfileTests(TestCase):
     def test_display_name_wins(self):
         self.user.profile.display_name = 'Anna A.'
         self.assertEqual(self.user.profile.name, 'Anna A.')
+
+    def test_profile_requires_login(self):
+        response = self.client.get(reverse('accounts:profile'))
+        self.assertEqual(response.status_code, 302)
+        self.assertIn(reverse('login'), response['Location'])
+
+    def test_profile_pages_render(self):
+        self.client.force_login(self.user)
+        self.assertEqual(self.client.get(reverse('accounts:profile')).status_code, 200)
+        self.assertEqual(self.client.get(reverse('accounts:profile_edit')).status_code, 200)
+
+    def test_edit_profile(self):
+        self.client.force_login(self.user)
+        response = self.client.post(
+            reverse('accounts:profile_edit'),
+            {'display_name': 'Anna', 'bio': 'Hej', 'phone_number': '070-000 00 00'},
+        )
+        self.assertRedirects(response, reverse('accounts:profile'))
+        self.user.profile.refresh_from_db()
+        self.assertEqual(self.user.profile.display_name, 'Anna')
+
+    def test_home_renders(self):
+        self.assertEqual(self.client.get(reverse('home')).status_code, 200)
 
 
 class AdminTests(TestCase):

@@ -4,5 +4,9 @@
 
 {% block content %}
   <h1>Welcome</h1>
-  <p>A small site, built one app at a time.</p>
+  {% if user.is_authenticated %}
+    <p>Signed in as <strong>{{ user.profile.name }}</strong>. <a href="{% url 'accounts:profile' %}">View your profile</a>.</p>
+  {% else %}
+    <p><a href="{% url 'login' %}">Log in</a> to continue. Accounts are created by an administrator.</p>
+  {% endif %}
 {% endblock %}

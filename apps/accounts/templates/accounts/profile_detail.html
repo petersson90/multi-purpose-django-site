@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}Profile{% endblock %}
+
+{% block content %}
+  {% with profile=user.profile %}
+  <section class="profile">
+    <h1>{{ profile.name }}</h1>
+    {% if profile.avatar %}<span class="avatar"><img class="avatar-img" src="{{ profile.avatar.url }}" alt=""></span>{% endif %}
+    <dl>
+      <dt>Email</dt><dd>{{ user.email }}</dd>
+      <dt>Phone</dt><dd>{{ profile.phone_number|default:"-" }}</dd>
+      <dt>Bio</dt><dd>{{ profile.bio|default:"-"|linebreaksbr }}</dd>
+    </dl>
+    <p><a class="btn" href="{% url 'accounts:profile_edit' %}" role="button">Edit profile</a></p>
+  </section>
+  {% endwith %}
+{% endblock %}
