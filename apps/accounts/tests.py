@@ -1,5 +1,6 @@
 from django.db import IntegrityError, transaction
 from django.test import TestCase
+from django.urls import reverse
 
 from .models import Profile, User
 
@@ -46,16 +47,50 @@ class EmailUniquenessTests(TestCase):
 
 
 class ProfileTests(TestCase):
-
     def setUp(self):
         self.user = User.objects.create_user('anna@example.com', PASSWORD)
-
 
     def test_profile_created_with_user(self):
         self.assertTrue(Profile.objects.filter(user=self.user).exists())
         self.assertEqual(self.user.profile.name, 'anna@example.com')
 
-
     def test_display_name_wins(self):
         self.user.profile.display_name = 'Anna A.'
         self.assertEqual(self.user.profile.name, 'Anna A.')
+
+
+class AdminTests(TestCase):
+    def setUp(self):
+        self.admin_user = User.objects.create_superuser('root@example.com', PASSWORD)
+        self.client.force_login(self.admin_user)
+
+    def test_admin_can_add_user_with_profile(self):
+        url = reverse('admin:accounts_user_add')
+        self.assertEqual(self.client.get(url).status_code, 200)
+        response = self.client.post(
+            url,
+            {
+                'email': 'New@Example.com',
+                'usable_password': 'true',
+                'password1': PASSWORD,
+                'password2': PASSWORD,
+            },
+        )
+        self.assertEqual(response.status_code, 302)
+        new_user = User.objects.get(email='new@example.com')
+        self.assertTrue(Profile.objects.filter(user=new_user).exists())
+        change_url = reverse('admin:accounts_user_change', args=[new_user.pk])
+        self.assertEqual(self.client.get(change_url).status_code, 200)
+
+    def test_admin_rejects_duplicate_email_in_any_case(self):
+        response = self.client.post(
+            reverse('admin:accounts_user_add'),
+            {
+                'email': 'ROOT@example.com',
+                'usable_password': 'true',
+                'password1': PASSWORD,
+                'password2': PASSWORD,
+            },
+        )
+        self.assertEqual(response.status_code, 200)  # form re-rendered with an error
+        self.assertEqual(User.objects.count(), 1)
