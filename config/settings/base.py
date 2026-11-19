@@ -60,6 +60,7 @@ DJANGO_APPS = [
 
 LOCAL_APPS = [
     'apps.core',
+    'apps.accounts',
 ]
 
 INSTALLED_APPS = DJANGO_APPS + LOCAL_APPS
@@ -110,6 +111,8 @@ DATABASES = {
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
+
+AUTH_USER_MODEL = 'accounts.User'  # Must be set before the first migration.
 
 AUTH_PASSWORD_VALIDATORS = [
     {
