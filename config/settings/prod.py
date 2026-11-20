@@ -8,6 +8,13 @@ if not SECRET_KEY:  # noqa: F405
 if not ALLOWED_HOSTS:  # noqa: F405
     raise ImproperlyConfigured('Set DJANGO_ALLOWED_HOSTS (comma-separated).')
 
+# Production always uses PostgreSQL, whatever DB_ENGINE says. Unlike development there are
+# no defaults: a forgotten variable must stop the app at startup rather than silently point
+# it at the wrong (or an empty) database.
+_missing_db_vars = [name for name in ('DB_NAME', 'DB_USER', 'DB_PASSWORD', 'DB_HOST') if not env(name)]
+if _missing_db_vars:
+    raise ImproperlyConfigured('Set the database variables: ' + ', '.join(_missing_db_vars) + '.')
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
@@ -21,6 +28,18 @@ MIDDLEWARE = [  # noqa: F405
 STORAGES = {
     'default': {'BACKEND': 'django.core.files.storage.FileSystemStorage'},
     'staticfiles': {'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage'},
+}
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': env('DB_NAME'),
+        'USER': env('DB_USER'),
+        'PASSWORD': env('DB_PASSWORD'),
+        'HOST': env('DB_HOST'),
+        'PORT': env('DB_PORT', '5432'),
+        'CONN_MAX_AGE': 60,
+    }
 }
 
 CSRF_TRUSTED_ORIGINS = env_list('DJANGO_CSRF_TRUSTED_ORIGINS')

@@ -104,13 +104,32 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
+# Local development and tests use SQLite by default (a single file, nothing to run).
+# Set DB_ENGINE=postgres to use PostgreSQL instead; the DB_* defaults below match
+# docker-compose.yml. Production always uses PostgreSQL and requires every DB_* variable
+# (see prod.py), whatever DB_ENGINE says.
+DB_ENGINE = env('DB_ENGINE', 'sqlite').strip().lower()
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+if DB_ENGINE == 'sqlite':
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
     }
-}
+elif DB_ENGINE in {'postgres', 'postgresql'}:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': env('DB_NAME', 'site'),
+            'USER': env('DB_USER', 'site'),
+            'PASSWORD': env('DB_PASSWORD', 'site'),
+            'HOST': env('DB_HOST', 'localhost'),
+            'PORT': env('DB_PORT', '5432'),
+        }
+    }
+else:
+    raise ValueError(f'DB_ENGINE must be "sqlite" or "postgres", not "{DB_ENGINE!r}".')
 
 
 # Password validation
