@@ -3,7 +3,10 @@
 {% block title %}Access denied{% endblock %}
 
 {% block content %}
-    <h1>Access denied</h1>
-    <p>You don't have permission to view this page.</p>
-    <p><a href="{% url 'home' %}">Back to the start page</a></p>
+  <div class="text-center py-5">
+    <p class="display-1 fw-bold text-body-secondary mb-0">403</p>
+    <h1 class="h3 mb-3">Access denied</h1>
+    <p class="text-body-secondary">You don't have permission to view this page.</p>
+    <a class="btn btn-primary" href="{% url 'home' %}">Back to the start page</a>
+  </div>
 {% endblock %}

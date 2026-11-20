@@ -158,10 +158,10 @@ class ErrorPageTests(TestCase):
         response = self.client.get('/no-such-page/')
         self.assertEqual(response.status_code, 404)
         self.assertContains(response, 'Page not found', status_code=404)
-        self.assertContains(response, 'navbar-brand', status_code=404)
+        self.assertContains(response, 'navbar', status_code=404)
 
     def test_500_is_standalone(self):
         response = server_error(RequestFactory().get('/'))
         self.assertEqual(response.status_code, 500)
         self.assertIn(b'Something went wrong', response.content)
-        self.assertNotIn(b'navbar-brand', response.content)
+        self.assertNotIn(b'navbar', response.content)

@@ -4,15 +4,28 @@
 
 {% block content %}
   {% with profile=user.profile %}
-  <section class="profile">
-    <h1>{{ profile.name }}</h1>
-    {% if profile.avatar %}<span class="avatar"><img class="avatar-img" src="{{ profile.avatar.url }}" alt=""></span>{% endif %}
-    <dl>
-      <dt>Email</dt><dd>{{ user.email }}</dd>
-      <dt>Phone</dt><dd>{{ profile.phone_number|default:"-" }}</dd>
-      <dt>Bio</dt><dd>{{ profile.bio|default:"-"|linebreaksbr }}</dd>
-    </dl>
-    <p><a class="btn" href="{% url 'accounts:profile_edit' %}" role="button">Edit profile</a></p>
-  </section>
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="card shadow-sm">
+        <div class="card-body p-4">
+          <div class="d-flex align-items-center gap-3 mb-4">
+            {% if profile.avatar %}
+              <img class="avatar rounded-circle border" src="{{ profile.avatar.url }}" alt="">
+            {% endif %}
+            <h1 class="h3 mb-0">{{ profile.name }}</h1>
+          </div>
+          <dl class="row mb-4">
+            <dt class="col-sm-3 text-body-secondary fw-normal">Email</dt>
+            <dd class="col-sm-9">{{ user.email }}</dd>
+            <dt class="col-sm-3 text-body-secondary fw-normal">Phone</dt>
+            <dd class="col-sm-9">{{ profile.phone_number|default:"-" }}</dd>
+            <dt class="col-sm-3 text-body-secondary fw-normal">Bio</dt>
+            <dd class="col-sm-9 mb-0">{{ profile.bio|default:"-"|linebreaksbr }}</dd>
+          </dl>
+          <a class="btn btn-primary" href="{% url 'accounts:profile_edit' %}">Edit profile</a>
+        </div>
+      </div>
+    </div>
+  </div>
   {% endwith %}
 {% endblock %}

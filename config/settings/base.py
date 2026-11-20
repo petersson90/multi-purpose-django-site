@@ -13,9 +13,10 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """Settings shared by every environment. Environment-specific files import from here."""
 import os
 from pathlib import Path
-from dotenv import load_dotenv
 
+from django.contrib.messages import constants as message_constants
 from django.utils.translation import gettext_lazy as _
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
@@ -184,6 +185,12 @@ STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 
 STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+# Bootstrap alert classes are "alert-<tag>"; Django's 'error' and 'debug' tags have other names there.
+MESSAGE_TAGS = {
+    message_constants.DEBUG: 'secondary',
+    message_constants.ERROR: 'danger',
+}
 
 MEDIA_URL = 'media/'
 

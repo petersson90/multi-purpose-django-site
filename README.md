@@ -20,8 +20,8 @@ site/
 ├── apps/                    # every feature lives here as "apps.<name>"
 │   ├── core/                # shared pieces: TimeStampedModel, home page
 │   └── accounts/            # custom User (email login) and Profile
-├── templates/               # project-wide templates (base.html, 403/404/500 error pages)
-├── static/                  # project-wide static files
+├── templates/               # project-wide templates (base.html, includes/form_fields.html, 403/404/500 error pages)
+├── static/                  # project-wide static files (css/, js/, vendor/bootstrap/)
 ├── locale/                  # translations (en, sv ready)
 ├── pyproject.toml           # dependencies, managed with uv
 ├── uv.lock                  # exact locked versions (commit this)
@@ -49,6 +49,13 @@ own tests in `apps/<name>/tests.py` (switch to a `tests/` package when it grows)
   invitation or self-signup flow can be added later if it is ever needed.
 - **Password reset deferred.** The reset URLs are routed but nothing links to them, and they
   render Django's admin-styled pages. Email setup is not done yet.
+- **Bootstrap 5 for the look.** Bootstrap 5.3.9 is vendored in `static/vendor/bootstrap/` (no CDN;
+  see the README there, including how to upgrade). It follows the visitor's light/dark setting
+  (`static/js/color-mode.js`). Bootstrap 6 is still an alpha, so it is not used. Render forms with
+  `{% include "includes/form_fields.html" %}`; it adds the Bootstrap classes through the
+  `bootstrap_field` filter in `apps/core/templatetags/bootstrap.py`, so no extra package is needed.
+  `500.html` stays standalone on purpose. The password change/reset pages are still Django's
+  admin-styled ones.
 - **Manual app registration.** New apps are added to settings and URLs by hand; explicit is
   easier to debug than auto-discovery.
 

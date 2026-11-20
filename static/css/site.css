@@ -1,0 +1,6 @@
+/* Bootstrap does the styling; only what it does not cover lives here. */
+.avatar {
+  width: 96px;
+  height: 96px;
+  object-fit: cover;
+}

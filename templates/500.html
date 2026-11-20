@@ -1,17 +1,24 @@
 <!doctype html>
-{# Deliberately standalone: Django renders this without context, and it must never fail itself. #}
+{# Deliberately standalone (no Bootstrap file, no template tags): Django renders this without context, and it must never fail itself. #}
 <html lang="en">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>Something went wrong</title>
-        <style>
-            body { font: 16px/1.5 system-ui, sans-serif; color: #1c1c1e; max-width: 36rem; margin: 4rem auto; padding: 0 1.25rem; }
-        </style>
-    </head>
-    <body>
-        <h1>Something went wrong</h1>
-        <p>An unexpected error occurred. It has been logged. Please try again in a moment.</p>
-        <p><a href="/">Back to the start page</a></p>
-    </body>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>Something went wrong</title>
+  <style>
+    body { font: 16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; margin: 0; padding: 4rem 1.25rem; text-align: center; }
+    @media (prefers-color-scheme: dark) { body { background: #212529; color: #dee2e6; } a.btn { background: #3d8bfd; } }
+    .code { font-size: 6rem; font-weight: 700; line-height: 1; margin: 0; opacity: .5; }
+    h1 { font-size: 1.75rem; margin: 0 0 1rem; }
+    p { margin: 0 0 1rem; opacity: .8; }
+    a.btn { display: inline-block; padding: .5rem 1rem; border-radius: .375rem; background: #0d6efd; color: #fff; text-decoration: none; }
+  </style>
+</head>
+<body>
+  <p class="code">500</p>
+  <h1>Something went wrong</h1>
+  <p>An unexpected error occurred. It has been logged. Please try again in a moment.</p>
+  <a class="btn" href="/">Back to the start page</a>
+</body>
 </html>
