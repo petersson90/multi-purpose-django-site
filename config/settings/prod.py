@@ -11,6 +11,18 @@ if not ALLOWED_HOSTS:  # noqa: F405
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
+# Serve static files from the app itself with WhiteNoise (run `collectstatic` on deploy).
+# Uploaded media (avatars) is NOT served by WhiteNoise: serve MEDIA_ROOT from your web server.
+MIDDLEWARE = [  # noqa: F405
+    MIDDLEWARE[0],  # noqa: F405  (SecurityMiddleware must stay first)
+    'whitenoise.middleware.WhiteNoiseMiddleware',
+    *MIDDLEWARE[1:],  # noqa: F405
+]
+STORAGES = {
+    'default': {'BACKEND': 'django.core.files.storage.FileSystemStorage'},
+    'staticfiles': {'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage'},
+}
+
 CSRF_TRUSTED_ORIGINS = env_list('DJANGO_CSRF_TRUSTED_ORIGINS')
 
 SECURE_SSL_REDIRECT = env_bool('DJANGO_SECURE_SSL_REDIRECT', True)

@@ -10,6 +10,13 @@ dependencies = [
     "python-dotenv>=1.2.4",
 ]
 
+[project.optional-dependencies]
+# Install on the server with: uv sync --no-dev --extra prod
+prod = [
+    "gunicorn>=27.0.1",
+    "whitenoise>=6.12.0",
+]
+
 [dependency-groups]
 # Installed by default with `uv sync`. Add dev-only tools here (e.g. ruff).
 dev = []
