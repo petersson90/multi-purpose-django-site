@@ -1,0 +1,27 @@
+[project]
+name = "multi-purpose-django-site"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+    "django>=5.2,<5.3",
+    "pillow>=13.0.0",
+    "psycopg[binary]>=3.3.9",
+    "python-dotenv>=1.2.4",
+]
+
+[project.optional-dependencies]
+# Install on the server with: uv sync --no-dev --extra prod
+prod = [
+    "gunicorn>=27.0.1",
+    "whitenoise>=6.12.0",
+]
+
+[dependency-groups]
+# Installed by default with `uv sync`. Add dev-only tools here (e.g. ruff).
+dev = []
+
+[tool.uv]
+# This is a project, not a distributable package: don't build/install it into the venv.
+package = false

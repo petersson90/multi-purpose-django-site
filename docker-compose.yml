@@ -1,0 +1,30 @@
+# Optional PostgreSQL for local development and tests. Django uses SQLite unless you set
+# DB_ENGINE=postgres (in .env or the shell), so you only need this once you switch over.
+#   docker compose up -d --wait db      start it (waits until it accepts connections)
+#   docker compose stop db              stop it (data is kept in the 'pgdata' volume)
+#   docker compose down -v              stop it AND delete the data
+#
+# Docker Compose reads .env next to this file, so the same DB_* values configure both the
+# container and Django. Without a .env the defaults below match the defaults in
+# config/settings/base.py.
+services:
+  db:
+    image: postgres:17
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME:-site}
+      POSTGRES_USER: ${DB_USER:-site}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-site}
+    ports:
+      # Bound to localhost only, so the database is not reachable from the network.
+      - '127.0.0.1:${DB_PORT:-5432}:5432'
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}']
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  pgdata:

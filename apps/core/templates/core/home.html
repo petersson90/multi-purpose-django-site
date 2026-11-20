@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+  <div class="p-5 mb-4 bg-body-tertiary rounded-3">
+    <h1 class="display-5 fw-bold">Welcome</h1>
+    {% if user.is_authenticated %}
+      <p class="lead mb-3">Signed in as <strong>{{ user.profile.name }}</strong>.</p>
+      <a class="btn btn-primary" href="{% url 'accounts:profile' %}">View your profile</a>
+    {% else %}
+      <p class="lead mb-3">Log in to continue. Accounts are created by an administrator.</p>
+      <a class="btn btn-primary" href="{% url 'login' %}">Log in</a>
+    {% endif %}
+  </div>
+{% endblock %}
