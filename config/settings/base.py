@@ -13,11 +13,15 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """Settings shared by every environment. Environment-specific files import from here."""
 import os
 from pathlib import Path
+from dotenv import load_dotenv
 
 from django.utils.translation import gettext_lazy as _
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
+
+# Read BASE_DIR/.env if it exists. Variables already set in the real environment win.
+load_dotenv(BASE_DIR / '.env')
 
 
 def env(key, default=None):
@@ -170,3 +174,28 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Logging
+# Everything goes to the console (stderr); systemd/journald or Docker collects it.
+# Use logging.getLogger(__name__) in app code and it is picked up by the 'apps' logger.
+LOG_LEVEL = env('DJANGO_LOG_LEVEL', 'INFO').upper()
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'standard': {
+            'format': '{asctime} {levelname} {name} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'console': {'class': 'logging.StreamHandler', 'formatter': 'standard'},
+    },
+    'root': {'handlers': ['console'], 'level': 'WARNING'},
+    'loggers': {
+        # Includes unhandled-exception tracebacks (django.request) in production.
+        'django': {'handlers': ['console'], 'level': LOG_LEVEL, 'propagate': False},
+        'apps': {'handlers': ['console'], 'level': LOG_LEVEL, 'propagate': False},
+    },
+}
